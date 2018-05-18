@@ -1,0 +1,135 @@
+; This Csound Synthesizer can be used in order to create some simple low electrical hum sounds through FM synthesis
+; as well as a metallic, flickering projector sound using FOF synthesis.
+; The results can be heard on my blog at (http://kjcoleman7.wixsite.com/kcsounddesign)
+
+<CsoundSynthesizer>
+<CsOptions>
+-odac
+</CsOptions>
+<CsInstruments>
+
+sr = 44100
+ksmps = 128
+nchnls = 2
+0dbfs = 1.0
+
+FLpanel "SimpleSynth", 500, 500, 100, 100, 3
+
+ival1 FLvalue "Carrier", 50, 20, 30, 135
+ival2 FLvalue "Mod", 50, 20, 90, 135
+;gkon, ictrl FLbutton "On/Off", 1, 1, 22, 150, 60, 10, 10, 0, 2, 0, 1
+gkcar, gihandle1 FLknob "Carrier", 50, 400, 0, 1, ival1, 50, 10, 80
+gkmod, gihandle2 FLknob "Mod", 100, 500, 0, 1, ival2, 50, 70, 80 
+FLpanelEnd
+FLrun
+FLsetVal_i 100, gihandle1
+FLsetVal_i 100, gihandle2
+
+gif2size = 1025
+
+instr 1
+kreader line 0, p3, gif2size
+gkzeroone tablei kreader, 2
+endin
+
+instr 2
+gkosc oscil 0.01, 2
+endin
+
+instr 3
+kvol expseg 0.001, p3*0.1, p4, p3*0.85, p4, p3*0.05, 0.001
+aout foscili 0.8, (0.1+gkosc), gkcar, gkmod, 0.1, 1
+amixed = (aout *gkosc) * 0.5
+amix = (amixed + (aout * 0.5)) * 0.5
+avrbl, avrbr reverbsc amix, amix, 0.6, 18000
+aalll = (amix * 0.6) + (avrbl * 0.3)
+aallr = (amix * 0.6)+(avrbr * 0.3)
+outs aalll, aallr
+endin
+
+instr 4
+kfad1 linseg 0, p3 * 0.4, 1, p3 *0.3, 1, p3 *0.1, 0
+katk linseg 0.001, p3 * 0.2, 0.015, p3 * 0.6, 0.001
+katk2 linseg 0.003, p3 * 0.2, 0.003, p3 * 0.2, 0.01, p3 * 0.4, 0.003
+krel linseg 0.001, p3 * 0.4, 0.015, p3 * 0.2, 0.01, p3 * 0.2, 0.001 
+koct linseg 1, p3 * 0.6, 1, p3 * 0.2, 6
+koct2 linseg 1, p3 * 0.7, 1, p3 * 0.1, 8 
+kfund linseg 20, p3 * 0.08, 70, p3* 0.72, 70
+kfund1 linseg 10, p3 * 0.08, 71, p3 * 0.72, 71
+kfund2 linseg 21, p3 * 0.2, 69, p3 * 0.4, 69, p3 * 0.2, 100
+kfund3 linseg 25, p3 * 0.25, 68, 0, 68
+afofer fof 0.1, kfund, 109, koct2, 100, katk, 0.015, krel, 9, 4, 5, p3*0.8
+afof1 fof kfad1, kfund1, 108, koct, 100, katk2, 0.03, krel, 9, 6, 5, p3*0.8
+afof2 fof 0.1, kfund2, 106, koct, 80, katk, 0.05, krel, 6, 6, 5, p3*0.8
+afof3 fof 0.1, 70, 107, koct2, 80, katk2, 0.05, krel, 6, 4, 5, p3*0.8
+afof4 fof 0.1, kfund3, 110, koct2, 100, katk, 0.05, krel, 6, 4, 5, p3*0.8
+amix = (afofer * 0.25) + (afof1 * 0.25) + (afof2 * 0.25) + (afof3 * 0.25) + (afof4 * 0.25)
+kverber linseg 0.6, p3 * 0.6, 0.6, p3 * 0.2, 0.99
+kverblvl linseg 0.3, p3 * 0.6, 0.3, p3 * 0.2, 0.9
+averbl, averbr reverbsc amix, amix, kverber, 18000
+gafull = (amix * 0.6) + (averbl * kverblvl)
+
+
+endin
+
+instr 5
+kfad1 linseg 0, p3 * 0.1, 1, p3 *0.6, 1, p3 *0.1, 0
+katk linseg 0.001, p3 * 0.4, 0.015, p3 * 0.4, 0.001
+katk2 linseg 0.003, p3 * 0.2, 0.003, p3 * 0.2, 0.01, p3 * 0.4, 0.003
+krel linseg 0.001, p3 * 0.4, 0.015, p3 * 0.2, 0.01, p3 * 0.2, 0.001 
+koct linseg 1, p3 * 0.6, 1, p3 * 0.2, 6
+koct2 linseg 1, p3 * 0.7, 1, p3 * 0.1, 8
+kfund linseg 20, p3 * 0.08, 72, 0, 72
+kfund1 linseg 19, p3 * 0.4, 71, p3 * 0.2, 71, p3 * 0.2, 99
+kfund2 linseg 21, p3 * 0.2, 69, p3 * 0.4, 69, p3 * 0.2, 100
+kfund3 linseg 25, p3 * 0.25, 68, 0, 68
+afofer fof 0.1, kfund, 109, koct2, 100, katk, 0.05, krel, 6, 4, 5, p3*0.8
+afof1 fof kfad1, kfund1, 108, koct, 100, katk2, 0.05, krel, 6, 6, 5, p3*0.8
+afof2 fof 0.1, kfund2, 106, koct, 80, katk, 0.05, krel, 6, 6, 5, p3*0.8
+afof3 fof 0.1, 70, 107, koct2, 80, katk2, 0.05, krel, 6, 4, 5, p3*0.8
+afof4 fof 0.1, kfund3, 110, koct2, 100, katk, 0.05, krel, 6, 4, 5, p3*0.8
+amix = (afofer * 0.25) + (afof1 * 0.25) + (afof2 * 0.25) + (afof3 * 0.25) + (afof4 * 0.25)
+
+kverber linseg 0.6, p3 * 0.6, 0.6, p3 * 0.2, 0.99
+kverblvl linseg 0.3, p3 * 0.6, 0.3, p3 * 0.2, 0.9
+averbl, averbr reverbsc amix, amix, kverber, 18000
+gafull2 = (amix * 0.6) + (averbl * kverblvl)
+
+endin
+
+instr 6
+kfade linseg 1, p3 * 0.85, 1, 0.15, 0
+afinalL = (gafull * kfade)
+afinalR = (gafull2 * kfade)
+outs gafull, gafull2
+endin
+
+instr 7
+kcarset linseg 100, 4, 400, 0, 400
+kmodset linseg 100, 4, 500, 0, 500
+FLsetVal 1, kcarset, gihandle1
+FLsetVal 1, kmodset, gihandle2
+endin
+</CsInstruments>
+<CsScore>
+
+f 1 0 513 10 1 0 0.33 0 0.2 0 0.143 0 0.111 0 0.0909 0 0.0769 0 0.0667
+f 2 0 1025 19 0.5 1 0 0
+f 3 0 512 10 1
+
+f 4 0 65536 1 "StringSamp.L.wav" 0 0 0
+f 5 0 1024 19 0.5 0.5 270 0.5
+f 6 0 65536 1 "Simple.wav" 0 0 0
+f 7 0 65536 1 "GtrDownClip.wav" 0 0 0
+;i 1 0 30
+;i 2 0 30
+;i 3 0 30 0.05
+;i 7 15 15
+
+i 4 0 25
+i 5 0 25
+i 6 0 25
+ 
+
+</CsScore>
+</CsoundSynthesizer>
