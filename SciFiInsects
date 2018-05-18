@@ -1,0 +1,194 @@
+; This Csound synthesizer uses FOF synthesis to create atmospheric sci fi sounds.
+; It was used to create the SciFi Insects sound
+; seen on my website. (http://kjcoleman7.wixsite.com/kcsounddesign)
+
+<CsoundSynthesizer>
+<CsOptions>
+-odac
+</CsOptions>
+<CsInstruments>
+
+sr = 44100
+ksmps = 128
+nchnls = 2
+0dbfs = 1.0
+gilen = 5909/44100
+garead init 0.7213
+gisweep init 0
+gkposjit init 0
+gaoutL init 0
+gaoutR init 0
+
+
+instr 1
+ilen = 8192/44100
+;ilen1 = 44100/5909
+
+;JITTER 1
+krand3 rand 0.2, 0.1
+krand4 rand 0.2, 0.12
+krand5 rand 0.2, 0.15
+kjit1 = krand3 + krand4 +krand5
+kjitter1 = kjit1 * 10
+;aidx2 line 0, ilen1, 0.7213
+aidx phasor ilen*0.03;+kjit1)
+aidx1 phasor ilen * 0.02
+
+;JITTER 2
+krand rand 0.2, 0.2
+krand1 rand 0.2, 0.3
+krand2 rand 0.2, 0.15
+kjit = krand + krand1 +krand2
+;kjitter = kjit * 0.1
+kjitline2 linseg 2, p3*0.55, 2, p3*0.05, 7
+ktrans = kjitline2+kjit
+
+;JITTER 3
+krand6 rand 0.2, 0.2
+krand7 rand 0.2, 0.3
+krand8 rand 0.2, 0.15
+kjit2 = krand6 + krand7 +krand8
+kjitline linseg 3, p3*0.46, 4, p3*0.14, 7
+kjitline1 linseg 4, p3*0.45, 4.5, p3*0.15, 7
+ktrans1 = kjitline+kjit2
+ktrans2 = kjitline1+kjit2
+ktrans3 = 8+kjit2
+ktrans4 = 4+kjit2
+ktrans5 = 0.1+(kjit2*0.1)
+
+;LINES
+aread line 0, gilen, 0.7213
+aread1 wrap aread, 0, 0.53
+
+kdens linseg 200, p3*0.25, 220, 0, 220
+kdens1 linseg 210, p3*0.3, 210, p3*0.3, 250 
+kdens2 = 50 + (kjit2*10)
+
+koct linseg 4, p3*0.3, 1, p3*0.1, 5, p3*0.15, 5, p3*0.05, 6
+koct1 linseg 5, p3*0.45, 5.5, p3*0.05, 7, p3*0.1, 9
+koct2 linseg 1.25, p3*0.5, 1.25, p3*0.06, 6, 0.04, 7
+
+;SOUND GENERATORS
+afof fog 0.5, kdens, ktrans, aread1, koct1, 80, 0.015, 0.04, 0.025, 9, 1, 2, p3*0.6
+afof1 fog 0.5, kdens1, ktrans1, aidx, koct1, 80, 0.015, 0.03, 0.025, 9, 1, 2, p3*0.6
+afof2 fog 0.5, 300, ktrans2, aidx1, koct1, 80, 0.005, 0.01, 0.015, 6, 1, 2, p3*0.6
+afof3 fog 0.5, kdens2, ktrans5, (aread1*0.2+0.2), koct, 80, 0.015, 0.02, 0.005, 6, 1, 2, p3*0.6
+afof4 fog 0.5, kdens2, ktrans5, (aread1*0.2+0.1), koct, 80, 0.015, 0.02, 0.005, 6, 1, 2, p3*0.6
+afof5 fog 0.5, kdens2, ktrans5, (aread1*0.2), koct, 80, 0.015, 0.02, 0.005, 6, 1, 2, p3*0.6
+afof6 fog 0.5, 301, ktrans4, (aread1 * 0.5), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof7 fog 0.5, 301, ktrans4, (aread1 * 0.5+0.1), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof8 fog 0.5, 301, ktrans4, (aread1 * 0.5+0.2), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof9 fog 0.5, 209, ktrans4, (aread1 * 0.5), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof10 fog 0.5, 205, ktrans4, (aread1 * 0.5+0.1), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof11 fog 0.5, 200, ktrans4, (aread1 * 0.5+0.2), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof12 fog 0.5, 509, ktrans5, (aread1 * 0.5), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof13 fog 0.5, 600, ktrans5, (aread1 * 0.5+0.1), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof14 fog 0.5, 508, ktrans5, (aread1 * 0.5+0.2), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof15 fog 0.5, 509, ktrans4, (aread1 * 0.5), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof16 fog 0.5, 600, ktrans4, (aread1 * 0.5+0.1), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+afof17 fog 0.5, 508, ktrans4, (aread1 * 0.5+0.2), koct2, 80, 0.005, 0.01, 0.0015, 6, 1, 2, p3*0.6
+
+
+amix = (afof*0.0) + (afof1*0.3) + (afof2 * 0.2) + ((afof3 + afof4 + afof5)*3) + (afof6*0.05) + (afof7*0.05) + (afof8*0.05) + (afof9*0.05) + (afof10*0.05) + (afof11*0.05) + ((afof12 + afof13 + afof14) * 1) + ((afof15 + afof16 + afof17) * 0.2)
+
+gisweep = p4
+isweep = p4
+krand9 randi 0.2, isweep, 0.5
+krand10 randi 0.2, isweep, 0.4
+krand11 randi 0.2, isweep, 0.3
+kjit3 = krand9+krand10+krand11
+kposjit = abs(kjit3)
+ahp atone amix, kposjit*12000
+ahp2 atone ahp, kposjit*12000
+amix1 = ahp2*0.8 + amix*0.5
+
+krev linseg 0.6, p3*0.58, 0.6, p3*0.02, 0.99
+
+arevL, arevR reverbsc amix1, amix1, krev, 18000
+aenv init 0
+aenv adsr 0.1, 0.001, 0.75, 1
+aenv1 delay aenv, 1
+aoutL = (amix1*0.5+arevL*0.5)*aenv1
+aoutR = (amix1*0.5+arevR*0.5)*aenv1
+
+kmult = kposjit * 1.6
+kran randomi 0, 1, 0.5 
+
+aout1L = aoutL * (0.96-kmult)
+aout1R = aoutR * kmult
+
+aout2L = aoutL * kmult
+aout2R = aoutR * (0.96-kmult)
+
+kvol = kran * 90
+krad = kvol * 3.14159 / 180
+ksin = sin(krad)
+
+aL = (aout1L * ksin) + (aout2L * (1 - ksin))
+aR = (aout1R * ksin) + (aout2R * (1-ksin))
+;outs (aL*3), (aR*3)
+outs aL, aR
+
+endin
+
+
+instr 2 ; Indexer
+garead line 0, gilen, 0.7213
+kread = k(garead)
+if kread < 0.53 goto continue
+goto end
+
+end:
+turnoff
+continue:
+ 
+endin
+
+instr 3 ; Loops indexer
+kread = k(garead)
+;printk 0.05, kread
+if kread >= 0.53 goto start
+goto end
+start:
+event "i", 2, 0, gilen
+end:
+
+endin
+
+instr 4 ; Panner
+
+kmult = gkposjit * 1.6
+kran randomi 0, 1, 0.5 
+
+aout1L = gaoutL * (0.96-kmult)
+aout1R = gaoutR * kmult
+
+aout2L = gaoutL * kmult
+aout2R = gaoutR * (0.96-kmult)
+
+kvol = kran * 90
+krad = kvol * 3.14159 / 180
+ksin = sin(krad)
+
+aL = (aout1L * ksin) + (aout2L * (1 - ksin))
+aR = (aout1R * ksin) + (aout2R * (1-ksin))
+;outs (aL*3), (aR*3)
+outs gaoutL, gaoutR
+
+endin
+</CsInstruments>
+<CsScore>
+f 1 0 1048576 1 "ClarMess_1.wav" 0 0 0 ; Any soundfile here
+;f 4 0 131072 1 "StringSamp.L.wav" 0 0 0
+;f 3 0 8192 1 "GtrDownClip.wav" 0 0 0
+f 2 0 1024 19 0.5 0.5 270 0.5
+
+i 1 0 30 0.5
+;i 3 0 30
+;i 4 0 30
+i 1 10 30 2
+i 1 5 10 2
+i 1 10 10 2
+;i 3 5 5
+</CsScore>
+</CsoundSynthesizer>
